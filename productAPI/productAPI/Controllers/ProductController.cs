@@ -14,5 +14,10 @@ namespace productAPI.Controllers
             new productDTO2(Guid.NewGuid(), "termék2", 3500, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow),
             new productDTO2(Guid.NewGuid(), "termék3", 4500, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
         };
+        [HttpGet]
+        public IEnumerable<productDTO2> GetAll()
+        {
+            return products;
+        }
     }
 }

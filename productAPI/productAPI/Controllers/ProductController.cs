@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 using static productAPI.DTO;
 
 namespace productAPI.Controllers
@@ -33,6 +34,31 @@ namespace productAPI.Controllers
             var product = new productDTO2(Guid.NewGuid(), createProduct.productName, createProduct.productPrice, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
             products.Add(product);
             return product;
+        }
+
+        [HttpPut]
+        public productDTO2 PullProduct(Guid ID, UpdateProductDTO updateProduct)
+        {
+            var existingItem = products.Where(x => x.ID == ID).FirstOrDefault();
+            var product = existingItem with
+            {
+                productName = updateProduct.productName,
+                productPrice = updateProduct.productPrice,
+                ModifiedTime = DateTimeOffset.UtcNow
+            };
+            var index = products.FindIndex(x => x.ID == ID);
+            products[index] = product;
+            return product;
+        }
+
+        [HttpDelete]
+
+        public string DeleteProduct(Guid id)
+        {
+            var index = products.FindIndex(x => x.ID == id);
+            products.RemoveAt(index);
+
+            return "Termék törölve";
         }
     }
 }

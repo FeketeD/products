@@ -19,5 +19,20 @@ namespace productAPI.Controllers
         {
             return products;
         }
+
+        [HttpGet("{ID}")]
+        public productDTO2 GetById(Guid ID)
+        {
+            var product = products.Where(x => x.ID == ID).FirstOrDefault();
+            return product;
+        }
+
+        [HttpPost]
+        public productDTO2 PostProduct(CreateProductDTO createProduct)
+        {
+            var product = new productDTO2(Guid.NewGuid(), createProduct.productName, createProduct.productPrice, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
+            products.Add(product);
+            return product;
+        }
     }
 }

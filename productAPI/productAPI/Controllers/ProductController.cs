@@ -5,7 +5,7 @@ using static productAPI.DTO;
 
 namespace productAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("product")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -22,18 +22,24 @@ namespace productAPI.Controllers
         }
 
         [HttpGet("{ID}")]
-        public productDTO2 GetById(Guid ID)
+        public ActionResult<productDTO2> GetById(Guid ID)
         {
             var product = products.Where(x => x.ID == ID).FirstOrDefault();
-            return product;
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(product);
         }
 
         [HttpPost]
-        public productDTO2 PostProduct(CreateProductDTO createProduct)
+        public ActionResult<productDTO2> PostProduct(CreateProductDTO createProduct)
         {
             var product = new productDTO2(Guid.NewGuid(), createProduct.productName, createProduct.productPrice, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
             products.Add(product);
-            return product;
+            return CreatedAtAction(nameof(GetById), new { id = product.ID}, product);
         }
 
         [HttpPut]
@@ -48,17 +54,23 @@ namespace productAPI.Controllers
             };
             var index = products.FindIndex(x => x.ID == ID);
             products[index] = product;
-            return product;
+
+            return products[index];
         }
 
-        [HttpDelete]
+        [HttpDelete("{ID}")]
 
-        public string DeleteProduct(Guid id)
+        public ActionResult<string> DeleteProduct(Guid id)
         {
             var index = products.FindIndex(x => x.ID == id);
             products.RemoveAt(index);
 
-            return "Termék törölve";
+            if (index == 0)
+            {
+                return NotFound();
+            }
+            
+            return NoContent();
         }
     }
 }
